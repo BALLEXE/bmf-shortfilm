@@ -1,357 +1,518 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
-<title>BMF Short Film Club</title>
+    <title>BMF Short Film Club</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<style>
-
-:root{
---bg:#080b12;
---glass:rgba(255,255,255,.08);
---border:rgba(255,255,255,.12);
---text:#fff;
---sub:#b7c0d1;
-}
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Prompt',sans-serif;
-scroll-behavior:smooth;
-}
-
-body{
-background:
-radial-gradient(circle at top left,#2563eb 0%,transparent 35%),
-radial-gradient(circle at top right,#9333ea 0%,transparent 35%),
-radial-gradient(circle at bottom,#06b6d4 0%,transparent 30%),
-var(--bg);
-
-color:var(--text);
-}
-
-nav{
-position:fixed;
-top:0;
-width:100%;
-z-index:1000;
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-padding:18px 8%;
-
-background:rgba(0,0,0,.25);
-backdrop-filter:blur(20px);
-border-bottom:1px solid var(--border);
-}
-
-.logo{
-font-size:1.3rem;
-font-weight:700;
-}
-
-nav ul{
-display:flex;
-gap:25px;
-list-style:none;
-}
-
-nav a{
-color:white;
-text-decoration:none;
-opacity:.85;
-}
-
-.hero{
-height:100vh;
-
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-
-text-align:center;
-padding:20px;
-}
-
-.hero h1{
-font-size:clamp(3rem,8vw,7rem);
-line-height:1;
-}
-
-.hero p{
-max-width:700px;
-margin-top:20px;
-color:var(--sub);
-}
-
-.btn{
-margin-top:35px;
-padding:14px 30px;
-
-background:white;
-color:black;
-
-border-radius:999px;
-text-decoration:none;
-font-weight:600;
-}
-
-section{
-padding:100px 8%;
-}
-
-.title{
-font-size:2.5rem;
-margin-bottom:40px;
-}
-
-.glass{
-background:var(--glass);
-backdrop-filter:blur(20px);
-border:1px solid var(--border);
-border-radius:30px;
-padding:30px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:25px;
-}
-
-.card{
-background:var(--glass);
-backdrop-filter:blur(20px);
-border:1px solid var(--border);
-border-radius:30px;
-overflow:hidden;
-transition:.3s;
-}
-
-.card:hover{
-transform:translateY(-8px);
-}
-
-.card iframe{
-width:100%;
-aspect-ratio:16/9;
-border:none;
-}
-
-.content{
-padding:20px;
-}
-
-.member{
-padding:20px;
-}
-
-.member h3{
-margin-bottom:8px;
-}
-
-footer{
-padding:50px;
-text-align:center;
-color:#9ca3af;
-}
-
-@media(max-width:768px){
-
-nav ul{
-display:none;
-}
-
-.hero h1{
-font-size:3rem;
-}
-
-}
-
-</style>
+    <style>
+         :root {
+            --bg: #080b12;
+            --glass: rgba(255, 255, 255, .08);
+            --border: rgba(255, 255, 255, .12);
+            --text: #fff;
+            --sub: #b7c0d1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Prompt', sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background: radial-gradient(circle at top left, #2563eb 0%, transparent 35%), radial-gradient(circle at top right, #9333ea 0%, transparent 35%), radial-gradient(circle at bottom, #06b6d4 0%, transparent 30%), var(--bg);
+            color: var(--text);
+        }
+        
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 8%;
+            background: rgba(0, 0, 0, .25);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        nav ul {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            opacity: .85;
+        }
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 1;
+        }
+        
+        .hero p {
+            max-width: 700px;
+            margin-top: 20px;
+            color: var(--sub);
+        }
+        
+        .btn {
+            margin-top: 35px;
+            padding: 14px 30px;
+            background: white;
+            color: black;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        section {
+            padding: 100px 8%;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+        
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 30px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            overflow: hidden;
+            transition: .3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+        }
+        
+        .card iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: none;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .member {
+            padding: 20px;
+        }
+        
+        .member h3 {
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            padding: 50px;
+            text-align: center;
+            color: #9ca3af;
+        }
+        
+        @media(max-width:768px) {
+            nav ul {
+                display: none;
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+        }
+    </style>
 </head>
+<script>
+    // ================= FIREBASE INIT =================
+    const firebaseConfig = {
+        apiKey: "AIzaSyC0kbk9zfEJg0XjYFtZqdMxKdDoa8h7c24",
+        authDomain: "bmf-club-6bbe9.firebaseapp.com",
+        projectId: "bmf-club-6bbe9",
+        storageBucket: "bmf-club-6bbe9.appspot.com",
+        messagingSenderId: "713804331208",
+        appId: "1:713804331208:web:a73b39e31b644863804dfd"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+
+    // ================= LOGIN =================
+    async function enterSite() {
+
+        const nickname = document.getElementById("nickname").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const file = document.getElementById("avatar").files[0];
+
+        if (!nickname) {
+            alert("กรุณากรอกชื่อเล่น");
+            return;
+        }
+
+        if (password !== "BMF2026") {
+            alert("รหัสผ่านไม่ถูกต้อง");
+            return;
+        }
+
+        const userRef = db.collection("users").doc(nickname);
+        const doc = await userRef.get();
+
+        // ===== มี user แล้ว =====
+        if (doc.exists) {
+            const data = doc.data();
+
+            showProfile(data.nickname, data.avatar);
+            saveLocal(data.nickname, data.avatar);
+            closeLogin();
+            return;
+        }
+
+        // ===== user ใหม่ =====
+        if (!file) {
+            alert("กรุณาอัปโหลดรูปโปรไฟล์");
+            return;
+        }
+
+        const avatarUrl = await uploadAvatar(file, nickname);
+
+        await userRef.set({
+            nickname: nickname,
+            avatar: avatarUrl
+        });
+
+        showProfile(nickname, avatarUrl);
+        saveLocal(nickname, avatarUrl);
+        closeLogin();
+    }
+
+
+    // ================= UPLOAD =================
+    async function uploadAvatar(file, name) {
+        const ref = storage.ref("avatars/" + name + ".jpg");
+        await ref.put(file);
+        return await ref.getDownloadURL();
+    }
+
+
+    // ================= UI =================
+    function showProfile(name, image) {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("profileArea").style.display = "flex";
+
+        document.getElementById("profileName").innerText = name;
+        document.getElementById("profileImg").src = image;
+    }
+
+    function closeLogin() {
+        document.getElementById("loginScreen").style.display = "none";
+    }
+
+    function logout() {
+        localStorage.clear();
+        location.reload();
+    }
+
+
+    // ================= LOCAL STORAGE =================
+    function saveLocal(name, img) {
+        localStorage.setItem("bmf_loggedin", "true");
+        localStorage.setItem("bmf_name", name);
+        localStorage.setItem("bmf_avatar", img);
+    }
+
+
+    // ================= AUTO LOGIN =================
+    window.onload = function() {
+
+        const logged = localStorage.getItem("bmf_loggedin");
+        const name = localStorage.getItem("bmf_name");
+        const img = localStorage.getItem("bmf_avatar");
+
+        if (logged === "true" && name && img) {
+            showProfile(name, img);
+            closeLogin();
+        }
+    };
+</script>
+
 
 <body>
 
-<nav>
-<div class="logo">🎬 BMF</div>
+    <nav>
 
-<ul>
-<li><a href="#about">เกี่ยวกับ</a></li>
-<li><a href="#films">ผลงาน</a></li>
-<li><a href="#team">ทีมงาน</a></li>
-<li><a href="#awards">รางวัล</a></li>
-<li><a href="#contact">ติดต่อ</a></li>
-</ul>
-</nav>
+        <div style="display:flex;align-items:center;gap:15px;">
 
-<section class="hero">
+            <div id="profileArea" style="display:none;align-items:center;gap:10px;">
 
-<h1>BMF<br>SHORT FILM CLUB</h1>
+                <img id="profileImg" style="
+width:42px;
+height:42px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid white;">
 
-<p>
-ชมรมหนังสั้น โรงเรียนน้ำสวยวิทยา
-สร้างสรรค์ภาพยนตร์สั้น สื่อดิจิทัล และงาน VFX
-</p>
+                <span id="profileName"></span>
 
-<a href="#films" class="btn">
+                <button onclick="logout()" style="
+padding:6px 12px;
+border:none;
+border-radius:10px;
+cursor:pointer;">
+
+ออก
+
+</button>
+
+            </div>
+
+            <div class="logo">
+                🎬 BMF
+            </div>
+
+        </div>
+
+        <ul>
+            <li><a href="#about">เกี่ยวกับ</a></li>
+            <li><a href="#films">ผลงาน</a></li>
+            <li><a href="#team">ทีมงาน</a></li>
+            <li><a href="#awards">รางวัล</a></li>
+            <li><a href="#contact">ติดต่อ</a></li>
+        </ul>
+
+    </nav>
+
+
+
+    <section class="hero">
+
+        <h1>BMF<br>SHORT FILM CLUB</h1>
+
+        <p>
+            ชมรมหนังสั้น โรงเรียนน้ำสวยวิทยา สร้างสรรค์ภาพยนตร์สั้น สื่อดิจิทัล และงาน VFX
+        </p>
+
+        <a href="#films" class="btn">
 ชมผลงาน
 </a>
 
-</section>
+    </section>
 
-<section id="about">
+    <section id="about">
 
-<h2 class="title">เกี่ยวกับชมรม</h2>
+        <h2 class="title">เกี่ยวกับชมรม</h2>
 
-<div class="glass">
+        <div class="glass">
 
-<h3>🏫 โรงเรียนน้ำสวยวิทยา</h3>
+            <h3>🏫 โรงเรียนน้ำสวยวิทยา</h3>
 
-<br>
+            <br>
 
-<p>
-ชมรมหนังสั้น BMF โรงเรียนน้ำสวยวิทยา ก่อตั้งขึ้นเพื่อส่งเสริมทักษะด้านการสร้างภาพยนตร์สั้น
-การถ่ายทำ การตัดต่อ และงาน Visual Effects (VFX)
-เปิดโอกาสให้นักเรียนได้พัฒนาความคิดสร้างสรรค์และการทำงานเป็นทีม
-ผ่านการผลิตสื่อและภาพยนตร์สั้นคุณภาพ
-</p>
+            <p>
+                ชมรมหนังสั้น BMF โรงเรียนน้ำสวยวิทยา ก่อตั้งขึ้นเพื่อส่งเสริมทักษะด้านการสร้างภาพยนตร์สั้น การถ่ายทำ การตัดต่อ และงาน Visual Effects (VFX) เปิดโอกาสให้นักเรียนได้พัฒนาความคิดสร้างสรรค์และการทำงานเป็นทีม ผ่านการผลิตสื่อและภาพยนตร์สั้นคุณภาพ
+            </p>
 
-</div>
+        </div>
 
-</section>
+    </section>
 
-<section id="films">
+    <section id="films">
 
-<h2 class="title">🎥 ผลงานหนังสั้น</h2>
+        <h2 class="title">🎥 ผลงานหนังสั้น</h2>
 
-<div class="grid">
+        <div class="grid">
 
-<div class="card">
-<iframe
-src="https://www.youtube.com/embed/YMZpomqvvh4"
-title="หนังสั้น BMF"
-allowfullscreen>
+            <div class="card">
+                <iframe src="https://www.youtube.com/embed/YMZpomqvvh4" title="หนังสั้น BMF" allowfullscreen>
 </iframe>
 
-<div class="content">
-<h3>หนังสั้นเรื่องที่ 1</h3>
-<p>รายละเอียดผลงาน</p>
-</div>
-</div>
+                <div class="content">
+                    <h3>หนังสั้นเรื่องที่ 1</h3>
+                    <p>รายละเอียดผลงาน</p>
+                </div>
+            </div>
 
-<div class="card">
-<iframe
-src="https://www.youtube.com/embed/YMZpomqvvh4"
-title="หนังสั้น BMF"
-allowfullscreen>
+            <div class="card">
+                <iframe src="https://www.youtube.com/embed/YMZpomqvvh4" title="หนังสั้น BMF" allowfullscreen>
 </iframe>
 
-<div class="content">
-<h3>หนังสั้นเรื่องที่ 2</h3>
-<p>รายละเอียดผลงาน</p>
-</div>
-</div>
+                <div class="content">
+                    <h3>หนังสั้นเรื่องที่ 2</h3>
+                    <p>รายละเอียดผลงาน</p>
+                </div>
+            </div>
 
-<div class="card">
-<iframe
-src="https://www.youtube.com/embed/YMZpomqvvh4"
-title="หนังสั้น BMF"
-allowfullscreen>
+            <div class="card">
+                <iframe src="https://www.youtube.com/embed/YMZpomqvvh4" title="หนังสั้น BMF" allowfullscreen>
 </iframe>
 
-<div class="content">
-<h3>หนังสั้นเรื่องที่ 3</h3>
-<p>รายละเอียดผลงาน</p>
-</div>
-</div>
+                <div class="content">
+                    <h3>หนังสั้นเรื่องที่ 3</h3>
+                    <p>รายละเอียดผลงาน</p>
+                </div>
+            </div>
 
-</div>
+        </div>
 
-</section>
+    </section>
 
-<section id="team">
+    <section id="team">
 
-<h2 class="title">👥 ทีมงานชมรม</h2>
+        <h2 class="title">👥 ทีมงานชมรม</h2>
 
-<div class="grid">
+        <div class="grid">
 
-<div class="glass member">
-<h3>👨‍🏫 ครูที่ปรึกษา</h3>
-<p>ภคพล ขันทอง (ครูเจม)</p>
-</div>
+            <div class="glass member">
+                <h3>👨‍🏫 ครูที่ปรึกษา</h3>
+                <p>ภคพล ขันทอง (ครูเจม)</p>
+            </div>
 
-<div class="glass member">
-<h3>🎬 หัวหน้าชมรม</h3>
-<p>นางสาวปลายฝน โพธิ์สว่าง</p>
-</div>
+            <div class="glass member">
+                <h3>🎬 หัวหน้าชมรม</h3>
+                <p>นางสาวปลายฝน โพธิ์สว่าง</p>
+            </div>
 
-</div>
+        </div>
 
-<br><br>
+        <br><br>
 
-<div class="glass">
+        <div class="glass">
 
-<h3>สมาชิกชมรม</h3>
+            <h3>สมาชิกชมรม</h3>
 
-<br>
+            <br>
 
-<p>
-• นางสาวปัญญรัตน์ สมบุตร (บีม)<br>
-• นางสาวลัดดาวัลย์ ตูนก่อ (ลัดดา)<br>
-• นางสาวอธิตยา สิงหศิริ (พริกไทย)<br>
-• นายจริพัฒน์ ฉลูทอง (บอล)
-</p>
+            <p>
+                • นางสาวปัญญรัตน์ สมบุตร (บีม)<br> • นางสาวลัดดาวัลย์ ตูนก่อ (ลัดดา)<br> • นางสาวอธิตยา สิงหศิริ (พริกไทย)<br> • นายจริพัฒน์ ฉลูทอง (บอล)
+            </p>
 
-</div>
+        </div>
 
-</section>
+    </section>
 
-<section id="awards">
+    <section id="awards">
 
-<h2 class="title">🏆 รางวัลและผลงาน</h2>
+        <h2 class="title">🏆 รางวัลและผลงาน</h2>
 
-<div class="glass">
+        <div class="glass">
 
-<p>
-เพิ่มรางวัล ผลงาน และการแข่งขันต่าง ๆ ที่นี่
-</p>
+            <p>
+                เพิ่มรางวัล ผลงาน และการแข่งขันต่าง ๆ ที่นี่
+            </p>
 
-</div>
+        </div>
 
-</section>
+    </section>
 
-<section id="contact">
+    <section id="contact">
 
-<h2 class="title">📞 ติดต่อ</h2>
+        <h2 class="title">📞 ติดต่อ</h2>
 
-<div class="glass">
+        <div class="glass">
 
-<p>
-YouTube : ใส่ลิงก์<br>
-Facebook : ใส่ลิงก์<br>
-Email : ใส่อีเมล
-</p>
+            <p>
+                YouTube : ใส่ลิงก์<br> Facebook : ใส่ลิงก์<br> Email : ใส่อีเมล
+            </p>
 
-</div>
+        </div>
 
-</section>
+    </section>
 
-<footer>
+    <footer>
 
-© 2026 BMF Short Film Club<br>
-โรงเรียนน้ำสวยวิทยา
+        © 2026 BMF Short Film Club<br> โรงเรียนน้ำสวยวิทยา
 
-</footer>
+    </footer>
 
 </body>
+
+<!-- วางส่วนนี้หลัง <body> ทันที -->
+
+<div id="loginScreen" style="
+position:fixed;
+inset:0;
+background:#080b12;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+    <div class="glass" style="width:420px;max-width:90%;">
+
+        <h2 style="text-align:center;margin-bottom:20px;">
+            🎬 BMF MEMBER LOGIN
+        </h2>
+
+        <input id="nickname" placeholder="ชื่อเล่น" style="width:100%;padding:15px;border:none;border-radius:12px;margin-bottom:10px;">
+
+        <input id="loginPassword" type="password" placeholder="รหัสผ่านสมาชิก" style="width:100%;padding:15px;border:none;border-radius:12px;margin-bottom:10px;">
+
+        <input id="avatar" type="file" accept="image/*" style="margin-bottom:15px;">
+
+        <button onclick="enterSite()" style="
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+">
+
+เข้าสู่เว็บไซต์
+
+</button>
+
+    </div>
+
+</div>
+
+<!-- แก้ nav เป็นแบบนี้ -->
+
 </html>
