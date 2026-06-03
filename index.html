@@ -10,14 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-         :root {
+        :root {
             --bg: #080b12;
             --glass: rgba(255, 255, 255, .08);
             --border: rgba(255, 255, 255, .12);
             --text: #fff;
             --sub: #b7c0d1;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
@@ -25,12 +25,12 @@
             font-family: 'Prompt', sans-serif;
             scroll-behavior: smooth;
         }
-        
+
         body {
             background: radial-gradient(circle at top left, #000000 0%, transparent 35%), radial-gradient(circle at top right, #1000ee 0%, transparent 35%), radial-gradient(circle at bottom, #06b6d4 0%, transparent 30%), var(--bg);
             color: var(--text);
         }
-        
+
         nav {
             position: fixed;
             top: 0;
@@ -44,18 +44,18 @@
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
         }
-        
+
         .logo {
             font-size: 1.3rem;
             font-weight: 700;
         }
-        
+
         nav ul {
             display: flex;
             gap: 25px;
             list-style: none;
         }
-        
+
         nav a {
             padding: 8px 18px;
             border-radius: 999px;
@@ -68,14 +68,14 @@
             /* สีม่วง */
             transition: 0.3s;
         }
-        
+
         nav a:hover {
             background: rgba(51, 152, 234, 0.2);
             box-shadow: 0 0 15px rgba(85, 150, 247, 0.6), 0 0 30px rgba(85, 150, 247, 0.3);
             color: white;
             transform: translateY(-2px);
         }
-        
+
         .hero {
             height: 100vh;
             display: flex;
@@ -85,18 +85,18 @@
             text-align: center;
             padding: 20px;
         }
-        
+
         .hero h1 {
             font-size: clamp(3rem, 8vw, 7rem);
             line-height: 1;
         }
-        
+
         .hero p {
             max-width: 700px;
             margin-top: 20px;
             color: var(--sub);
         }
-        
+
         .btn {
             margin-top: 35px;
             padding: 14px 30px;
@@ -106,16 +106,16 @@
             text-decoration: none;
             font-weight: 600;
         }
-        
+
         section {
             padding: 100px 8%;
         }
-        
+
         .title {
             font-size: 2.5rem;
             margin-bottom: 40px;
         }
-        
+
         .glass {
             background: var(--glass);
             backdrop-filter: blur(20px);
@@ -123,13 +123,13 @@
             border-radius: 30px;
             padding: 30px;
         }
-        
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 25px;
         }
-        
+
         .card {
             background: var(--glass);
             backdrop-filter: blur(20px);
@@ -138,44 +138,45 @@
             overflow: hidden;
             transition: .3s;
         }
-        
+
         .card:hover {
             transform: translateY(-8px);
         }
-        
+
         .card iframe {
             width: 100%;
             aspect-ratio: 16/9;
             border: none;
         }
-        
+
         .content {
             padding: 20px;
         }
-        
+
         .member {
             padding: 20px;
         }
-        
+
         .member h3 {
             margin-bottom: 8px;
         }
-        
+
         footer {
             padding: 50px;
             text-align: center;
             color: #9ca3af;
         }
-        
+
         @media(max-width:768px) {
             nav ul {
                 display: none;
             }
+
             .hero h1 {
                 font-size: 3rem;
             }
         }
-        
+
         .toast {
             position: fixed;
             top: 24px;
@@ -195,34 +196,38 @@
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 99999;
         }
+
         /* ตอนแสดง */
-        
+
         .toast.show {
             opacity: 1;
             transform: translateY(0) scale(1);
         }
+
         /* SUCCESS */
-        
+
         .toast.success {
             background: rgba(0, 255, 120, 0.12);
             border: 1px solid rgba(0, 255, 120, 0.35);
             box-shadow: 0 10px 35px rgba(0, 255, 120, 0.15), 0 0 25px rgba(0, 255, 120, 0.25);
         }
+
         /* ERROR */
-        
+
         .toast.error {
             background: rgba(255, 60, 60, 0.12);
             border: 1px solid rgba(255, 60, 60, 0.35);
             box-shadow: 0 10px 35px rgba(255, 60, 60, 0.15), 0 0 25px rgba(255, 60, 60, 0.25);
         }
+
         /* INFO (optional) */
-        
+
         .toast.info {
             background: rgba(0, 140, 255, 0.12);
             border: 1px solid rgba(0, 140, 255, 0.35);
             box-shadow: 0 10px 35px rgba(0, 140, 255, 0.15), 0 0 25px rgba(0, 140, 255, 0.25);
         }
-        
+
         .music-panel {
             position: fixed;
             right: -260px;
@@ -237,18 +242,18 @@
             transition: 0.4s;
             z-index: 99999;
         }
-        
+
         .music-panel.show {
             right: 20px;
         }
-        
+
         .music-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-        
+
         .music-header button {
             background: transparent;
             border: none;
@@ -256,15 +261,41 @@
             font-size: 16px;
             cursor: pointer;
         }
+
+
+        /* click explosion */
+        .particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
+            pointer-events: none;
+            box-shadow: 0 0 10px cyan;
+            animation: explode 0.6s ease-out forwards;
+            z-index: 99999;
+        }
+
+        @keyframes explode {
+            to {
+                transform: translate(var(--x), var(--y)) scale(0);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <script>
     const successSound = new Audio("success.mp3");
     const errorSound = new Audio("error.mp3");
+    const clickSound = new Audio("click.mp3");
+    const boomSound = new Audio("boom.mp3");
+
+    clickSound.volume = 0.4;
+    boomSound.volume = 0.6;
 
     successSound.volume = 0.6;
     errorSound.volume = 0.6;
-    window.onload = function() {
+    window.onload = function () {
 
         const logged =
             localStorage.getItem("bmf_loggedin");
@@ -326,7 +357,7 @@
         const reader =
             new FileReader();
 
-        reader.onload = function(e) {
+        reader.onload = function (e) {
 
             const image =
                 e.target.result;
@@ -407,6 +438,39 @@
         panel.classList.remove("show");
         music.pause();
     }
+    // คลิกระเบิดอย่างเดียว
+    window.addEventListener("click", (e) => {
+
+        // เสียง
+        clickSound.currentTime = 0;
+        clickSound.play();
+
+        boomSound.currentTime = 0;
+        boomSound.play();
+
+        // ระเบิดแสง
+        for (let i = 0; i < 16; i++) {
+            const particle = document.createElement("div");
+            particle.className = "particle";
+
+            particle.style.left = e.clientX + "px";
+            particle.style.top = e.clientY + "px";
+
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 100 + 30;
+
+            particle.style.setProperty("--x", Math.cos(angle) * distance + "px");
+            particle.style.setProperty("--y", Math.sin(angle) * distance + "px");
+
+            document.body.appendChild(particle);
+
+            setTimeout(() => particle.remove(), 700);
+        }
+
+    });
+
+
+
 </script>
 
 <div id="toast" class="ios-toast"></div>
@@ -426,6 +490,7 @@
 
 
 <body>
+
 
     <nav>
 
@@ -452,9 +517,9 @@ border:none;
 border-radius:10px;
 cursor:pointer;">
 
-ออก
+                    ออก
 
-</button>
+                </button>
 
             </div>
 
@@ -485,8 +550,8 @@ cursor:pointer;">
         </p>
 
         <a href="#films" class="btn">
-ชมผลงาน
-</a>
+            ชมผลงาน
+        </a>
 
     </section>
 
@@ -501,7 +566,9 @@ cursor:pointer;">
             <br>
 
             <p>
-                ชมรมหนังสั้น BMF โรงเรียนน้ำสวยวิทยา ก่อตั้งขึ้นเพื่อส่งเสริมทักษะด้านการสร้างภาพยนตร์สั้น การถ่ายทำ การตัดต่อ และงาน Visual Effects (VFX) เปิดโอกาสให้นักเรียนได้พัฒนาความคิดสร้างสรรค์และการทำงานเป็นทีม ผ่านการผลิตสื่อและภาพยนตร์สั้นคุณภาพ
+                ชมรมหนังสั้น BMF โรงเรียนน้ำสวยวิทยา ก่อตั้งขึ้นเพื่อส่งเสริมทักษะด้านการสร้างภาพยนตร์สั้น การถ่ายทำ
+                การตัดต่อ และงาน Visual Effects (VFX) เปิดโอกาสให้นักเรียนได้พัฒนาความคิดสร้างสรรค์และการทำงานเป็นทีม
+                ผ่านการผลิตสื่อและภาพยนตร์สั้นคุณภาพ
             </p>
 
         </div>
@@ -516,7 +583,7 @@ cursor:pointer;">
 
             <div class="card">
                 <iframe src="https://www.youtube.com/embed/YMZpomqvvh4" title="หนังสั้น BMF" allowfullscreen>
-</iframe>
+                </iframe>
 
                 <div class="content">
 
@@ -528,7 +595,7 @@ cursor:pointer;">
 
             <div class="card">
                 <iframe src="https://www.youtube.com/embed/YMZpomqvvh4" title="หนังสั้น BMF" allowfullscreen>
-</iframe>
+                </iframe>
 
                 <div class="content">
                     <h3>หนังสั้นเรื่องที่ 2</h3>
@@ -538,7 +605,7 @@ cursor:pointer;">
 
             <div class="card">
                 <iframe src="https://www.youtube.com/embed/YMZpomqvvh4" title="หนังสั้น BMF" allowfullscreen>
-</iframe>
+                </iframe>
 
                 <div class="content">
                     <h3>หนังสั้นเรื่องที่ 3</h3>
@@ -577,7 +644,8 @@ cursor:pointer;">
             <br>
 
             <p>
-                • นางสาวปัญญรัตน์ สมบุตร (บีม)<br> • นางสาวลัดดาวัลย์ ตูนก่อ (ลัดดา)<br> • นางสาวอธิตยา สิงหศิริ (พริกไทย)<br> • นายจริพัฒน์ ฉลูทอง (บอล)
+                • นางสาวปัญญรัตน์ สมบุตร (บีม)<br> • นางสาวลัดดาวัลย์ ตูนก่อ (ลัดดา)<br> • นางสาวอธิตยา สิงหศิริ
+                (พริกไทย)<br> • นายจริพัฒน์ ฉลูทอง (บอล)
             </p>
 
         </div>
@@ -618,6 +686,7 @@ cursor:pointer;">
 
     </footer>
 
+
 </body>
 
 <!-- วางส่วนนี้หลัง <body> ทันที -->
@@ -638,9 +707,11 @@ z-index:9999;
             🎬 BMF MEMBER LOGIN
         </h2>
 
-        <input id="nickname" placeholder="ชื่อเล่น" style="width:100%;padding:15px;border:none;border-radius:12px;margin-bottom:10px;">
+        <input id="nickname" placeholder="ชื่อเล่น"
+            style="width:100%;padding:15px;border:none;border-radius:12px;margin-bottom:10px;">
 
-        <input id="loginPassword" type="password" placeholder="รหัสผ่านสมาชิก" style="width:100%;padding:15px;border:none;border-radius:12px;margin-bottom:10px;">
+        <input id="loginPassword" type="password" placeholder="รหัสผ่านสมาชิก"
+            style="width:100%;padding:15px;border:none;border-radius:12px;margin-bottom:10px;">
 
         <input id="avatar" type="file" accept="image/*" style="margin-bottom:15px;">
 
@@ -653,9 +724,9 @@ cursor:pointer;
 font-weight:bold;
 ">
 
-เข้าสู่เว็บไซต์
+            เข้าสู่เว็บไซต์
 
-</button>
+        </button>
 
     </div>
 
