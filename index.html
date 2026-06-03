@@ -4,10 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
     <title>BMF Short Film Club</title>
 
@@ -31,7 +27,7 @@
         }
         
         body {
-            background: radial-gradient(circle at top left, #2563eb 0%, transparent 35%), radial-gradient(circle at top right, #9333ea 0%, transparent 35%), radial-gradient(circle at bottom, #06b6d4 0%, transparent 30%), var(--bg);
+            background: radial-gradient(circle at top left, #000000 0%, transparent 35%), radial-gradient(circle at top right, #1000ee 0%, transparent 35%), radial-gradient(circle at bottom, #06b6d4 0%, transparent 30%), var(--bg);
             color: var(--text);
         }
         
@@ -61,9 +57,23 @@
         }
         
         nav a {
-            color: white;
+            padding: 8px 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             text-decoration: none;
-            opacity: .85;
+            /* เอาเส้นใต้ทิ้ง */
+            color: #ffffff;
+            /* สีม่วง */
+            transition: 0.3s;
+        }
+        
+        nav a:hover {
+            background: rgba(51, 152, 234, 0.2);
+            box-shadow: 0 0 15px rgba(85, 150, 247, 0.6), 0 0 30px rgba(85, 150, 247, 0.3);
+            color: white;
+            transform: translateY(-2px);
         }
         
         .hero {
@@ -165,122 +175,254 @@
                 font-size: 3rem;
             }
         }
+        
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 14px 18px;
+            min-width: 220px;
+            border-radius: 14px;
+            color: #fff;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 150, 255, 0.15);
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 99999;
+        }
+        /* ตอนแสดง */
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        /* SUCCESS */
+        
+        .toast.success {
+            background: rgba(0, 255, 120, 0.12);
+            border: 1px solid rgba(0, 255, 120, 0.35);
+            box-shadow: 0 10px 35px rgba(0, 255, 120, 0.15), 0 0 25px rgba(0, 255, 120, 0.25);
+        }
+        /* ERROR */
+        
+        .toast.error {
+            background: rgba(255, 60, 60, 0.12);
+            border: 1px solid rgba(255, 60, 60, 0.35);
+            box-shadow: 0 10px 35px rgba(255, 60, 60, 0.15), 0 0 25px rgba(255, 60, 60, 0.25);
+        }
+        /* INFO (optional) */
+        
+        .toast.info {
+            background: rgba(0, 140, 255, 0.12);
+            border: 1px solid rgba(0, 140, 255, 0.35);
+            box-shadow: 0 10px 35px rgba(0, 140, 255, 0.15), 0 0 25px rgba(0, 140, 255, 0.25);
+        }
+        
+        .music-panel {
+            position: fixed;
+            right: -260px;
+            top: 100px;
+            width: 240px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            transition: 0.4s;
+            z-index: 99999;
+        }
+        
+        .music-panel.show {
+            right: 20px;
+        }
+        
+        .music-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .music-header button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <script>
-    // ================= FIREBASE INIT =================
-    const firebaseConfig = {
-        apiKey: "AIzaSyC0kbk9zfEJg0XjYFtZqdMxKdDoa8h7c24",
-        authDomain: "bmf-club-6bbe9.firebaseapp.com",
-        projectId: "bmf-club-6bbe9",
-        storageBucket: "bmf-club-6bbe9.appspot.com",
-        messagingSenderId: "713804331208",
-        appId: "1:713804331208:web:a73b39e31b644863804dfd"
+    const successSound = new Audio("success.mp3");
+    const errorSound = new Audio("error.mp3");
+
+    successSound.volume = 0.6;
+    errorSound.volume = 0.6;
+    window.onload = function() {
+
+        const logged =
+            localStorage.getItem("bmf_loggedin");
+
+        const savedName =
+            localStorage.getItem("bmf_name");
+
+        const savedImage =
+            localStorage.getItem("bmf_avatar");
+
+        if (
+            logged === "true" &&
+            savedName &&
+            savedImage
+        ) {
+
+            document.getElementById("loginScreen").style.display = "none";
+
+            document.getElementById("profileArea").style.display = "flex";
+
+            document.getElementById("profileName").innerText =
+                savedName;
+
+            document.getElementById("profileImg").src =
+                savedImage;
+
+        }
+
     };
 
-    firebase.initializeApp(firebaseConfig);
+    function enterSite() {
 
-    const db = firebase.firestore();
-    const storage = firebase.storage();
+        const nickname =
+            document.getElementById("nickname").value;
 
+        const password =
+            document.getElementById("loginPassword").value;
 
-    // ================= LOGIN =================
-    async function enterSite() {
-
-        const nickname = document.getElementById("nickname").value.trim();
-        const password = document.getElementById("loginPassword").value;
-        const file = document.getElementById("avatar").files[0];
-
-        if (!nickname) {
-            alert("กรุณากรอกชื่อเล่น");
-            return;
-        }
+        const file =
+            document.getElementById("avatar").files[0];
 
         if (password !== "BMF2026") {
-            alert("รหัสผ่านไม่ถูกต้อง");
+            showToast("รหัสผ่านไม่ถูกต้อง", "error");
             return;
         }
 
-        const userRef = db.collection("users").doc(nickname);
-        const doc = await userRef.get();
 
-        // ===== มี user แล้ว =====
-        if (doc.exists) {
-            const data = doc.data();
-
-            showProfile(data.nickname, data.avatar);
-            saveLocal(data.nickname, data.avatar);
-            closeLogin();
+        if (!nickname) {
+            showToast("กรุณากรอกชื่อเล่น", "error");
             return;
         }
 
-        // ===== user ใหม่ =====
+
         if (!file) {
-            alert("กรุณาอัปโหลดรูปโปรไฟล์");
+            showToast("กรุณาเลือกรูปโปรไฟล์", "error");
             return;
         }
 
-        const avatarUrl = await uploadAvatar(file, nickname);
+        const reader =
+            new FileReader();
 
-        await userRef.set({
-            nickname: nickname,
-            avatar: avatarUrl
-        });
+        reader.onload = function(e) {
 
-        showProfile(nickname, avatarUrl);
-        saveLocal(nickname, avatarUrl);
-        closeLogin();
-    }
+            const image =
+                e.target.result;
 
+            localStorage.setItem(
+                "bmf_loggedin",
+                "true"
+            );
 
-    // ================= UPLOAD =================
-    async function uploadAvatar(file, name) {
-        const ref = storage.ref("avatars/" + name + ".jpg");
-        await ref.put(file);
-        return await ref.getDownloadURL();
-    }
+            localStorage.setItem(
+                "bmf_name",
+                nickname
+            );
 
+            localStorage.setItem(
+                "bmf_avatar",
+                image
+            );
 
-    // ================= UI =================
-    function showProfile(name, image) {
-        document.getElementById("loginScreen").style.display = "none";
-        document.getElementById("profileArea").style.display = "flex";
+            document.getElementById("loginScreen").style.display =
+                "none";
 
-        document.getElementById("profileName").innerText = name;
-        document.getElementById("profileImg").src = image;
-    }
+            document.getElementById("profileArea").style.display =
+                "flex";
 
-    function closeLogin() {
-        document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("profileName").innerText =
+                nickname;
+
+            document.getElementById("profileImg").src =
+                image;
+            showToast("เข้าสู่ระบบสำเร็จ ✔", "success");
+
+            document.getElementById("musicPanel").classList.add("show");
+
+            const music = document.getElementById("bgMusic");
+            music.volume = 0.5;
+            music.play();
+        };
+
+        reader.readAsDataURL(file);
+
     }
 
     function logout() {
-        localStorage.clear();
+
+        localStorage.removeItem("bmf_loggedin");
+        localStorage.removeItem("bmf_name");
+        localStorage.removeItem("bmf_avatar");
+
         location.reload();
+
     }
 
+    function showToast(message, type = "info") {
+        const toast = document.getElementById("toast");
 
-    // ================= LOCAL STORAGE =================
-    function saveLocal(name, img) {
-        localStorage.setItem("bmf_loggedin", "true");
-        localStorage.setItem("bmf_name", name);
-        localStorage.setItem("bmf_avatar", img);
-    }
+        toast.className = "toast show " + type;
+        toast.innerText = message;
 
-
-    // ================= AUTO LOGIN =================
-    window.onload = function() {
-
-        const logged = localStorage.getItem("bmf_loggedin");
-        const name = localStorage.getItem("bmf_name");
-        const img = localStorage.getItem("bmf_avatar");
-
-        if (logged === "true" && name && img) {
-            showProfile(name, img);
-            closeLogin();
+        // เล่นเสียง
+        if (type === "success") {
+            successSound.currentTime = 0;
+            successSound.play();
+        } else if (type === "error") {
+            errorSound.currentTime = 0;
+            errorSound.play();
         }
-    };
+
+        setTimeout(() => {
+            toast.className = "toast";
+        }, 2500);
+    }
+
+    function closeMusic() {
+        const panel = document.getElementById("musicPanel");
+        const music = document.getElementById("bgMusic");
+
+        panel.classList.remove("show");
+        music.pause();
+    }
 </script>
+
+<div id="toast" class="ios-toast"></div>
+
+<div id="musicPanel" class="music-panel">
+    <div class="music-header">
+        <span>🎵 Now Playing</span>
+        <button onclick="closeMusic()">✖</button>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <p>BMF Theme Music</p>
+</div>
 
 
 <body>
@@ -296,7 +438,11 @@ width:42px;
 height:42px;
 border-radius:50%;
 object-fit:cover;
-border:2px solid white;">
+border:2px solid white;
+box-shadow: 0 0 10px rgba(255,255,255,0.6),
+            0 0 20px rgba(0,150,255,0.4);
+">
+
 
                 <span id="profileName"></span>
 
@@ -373,6 +519,8 @@ cursor:pointer;">
 </iframe>
 
                 <div class="content">
+
+
                     <h3>หนังสั้นเรื่องที่ 1</h3>
                     <p>รายละเอียดผลงาน</p>
                 </div>
