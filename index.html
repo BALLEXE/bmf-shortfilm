@@ -3,37 +3,341 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ชมรมหนังสั้น | Short Film Club</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700;800&family=Playfair+Display:ital,wght@0,900;1,700&display=swap" rel="stylesheet">
+<title>มือเปล่า — Hand Theremin</title>
 <style>
-  :root {
-    --black: #0A0A0F;
-    --deep: #1C1C28;
-    --gold: #D4A843;
-    --gold-dim: #8A6B22;
-    --cream: #F0EDE6;
-    --gray: #6B6B7A;
-    --white: #FFFFFF;
+  :root{
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --ink: #f4f2ec;
+    --dim: #8b899a;
+    --line: #2a2a38;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--black);
-    color: var(--cream);
-    font-family: 'Sarabun', sans-serif;
+  * { box-sizing: border-box; }
+  html, body {
+    margin:0; padding:0; height:100%;
+    background: radial-gradient(120% 120% at 50% -10%, #1b1b28 0%, var(--bg) 55%, #050507 100%);
+    color: var(--ink);
+    font-family: 'Sarabun', 'Trebuchet MS', system-ui, sans-serif;
     overflow-x: hidden;
   }
-
-  /* ── FILMSTRIP ── */
-  .filmstrip {
-    width: 100%;
-    background: var(--gold);
-    display: flex;
-    align-items: center;
+  .wrap{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+  header{
+    display:flex; flex-direction:column; gap:6px;
+    margin-bottom: 22px;
+  }
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--dim);
+    font-weight: 600;
+  }
+  h1{
+    margin:0;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(100deg,#ffd9a0,#ff9ecb 35%,#9ecbff 70%,#a0ffd9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  p.sub{
+    margin: 4px 0 0;
+    color: var(--dim);
+    font-size: 14.5px;
+    line-height:1.5;
+    max-width: 60ch;
+  }
+  .stage{
+    position: relative;
+    margin-top: 22px;
+    border-radius: 18px;
     overflow: hidden;
+    background: #000;
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 80px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.02) inset;
+    aspect-ratio: 4/3;
+  }
+  .mirror{
+    position:absolute; inset:0;
+    transform: scaleX(-1);
+  }
+  video, canvas.overlay{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit: cover;
+  }
+  video{ background:#000; }
+  canvas.overlay{ pointer-events:none; }
+
+  .startgate{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:14px;
+    background: rgba(6,6,10,.88);
+    backdrop-filter: blur(2px);
+    z-index: 5;
+    text-align:center;
+    padding: 20px;
+  }
+  .startgate p{ color:var(--dim); font-size:13.5px; max-width:36ch; margin:0; }
+  button#startBtn{
+    appearance:none; border:none; cursor:pointer;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-size: 15px; font-weight:700;
+    letter-spacing:.02em;
+    color:#0a0a0f;
+    background: linear-gradient(100deg,#ffd9a0,#ff9ecb 45%,#9ecbff);
+    box-shadow: 0 8px 30px -8px rgba(255,158,203,.5);
+    transition: transform .15s ease;
+  }
+  button#startBtn:hover{ transform: translateY(-1px) scale(1.02); }
+  button#startBtn:active{ transform: translateY(0) scale(.98); }
+
+  .hud{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top: 14px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .status{
+    font-size: 12.5px;
+    color: var(--dim);
+    display:flex; align-items:center; gap:8px;
+  }
+  .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: #565565;
+  }
+  .dot.live{ background:#7CFFB2; box-shadow:0 0 10px #7cffb2aa; }
+
+  .legend{
+    display:flex; gap:6px; flex-wrap:wrap;
+  }
+  .chip{
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--dim);
+  }
+  footer.note{
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--dim);
+    line-height:1.6;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    button#startBtn{ transition:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Webcam Instrument</span>
+    <h1>มือเปล่า — เล่นเสียงด้วยมือ</h1>
+    <p class="sub">เปิดกล้อง แล้วยกมือขึ้นมาในเฟรม จอจะแบ่งเป็น 8 โซนแนวตั้งแทนคีย์โน้ต Do–Re–Mi–...–Do ขยับมือไปอยู่ตรงโซนไหน โซนนั้นจะส่งเสียงโน้ตนั้นออกมา ยกมือออกจากโซน เสียงจะหยุด</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="mirror">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas class="overlay" id="overlay"></canvas>
+    </div>
+    <div class="startgate" id="gate">
+      <button id="startBtn">เปิดกล้องแล้วเริ่มเล่น</button>
+      <p>ต้องอนุญาตให้เว็บนี้ใช้กล้อง — ภาพจะไม่ถูกส่งไปที่ไหน ประมวลผลอยู่ในเบราว์เซอร์ของคุณเท่านั้น</p>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">ยังไม่ได้เปิดกล้อง</span></div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <footer class="note">
+    วิธีทำงาน: ตรวจจับ "สีผิว" ในแต่ละโซนของภาพจากกล้อง ถ้าสัดส่วนพิกเซลสีผิวในโซนนั้นสูงพอ ระบบจะถือว่ามืออยู่ตรงนั้นแล้วเล่นโน้ตด้วย Web Audio API — เล่นในที่แสงสว่างพอจะตรวจจับได้แม่นกว่า
+  </footer>
+</div>
+
+<script>
+(function(){
+  const video = document.getElementById('video');
+  const overlay = document.getElementById('overlay');
+  const octx = overlay.getContext('2d');
+  const gate = document.getElementById('gate');
+  const startBtn = document.getElementById('startBtn');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+  const legend = document.getElementById('legend');
+  const stage = document.getElementById('stage');
+
+  // 8 zones -> notes (C major scale, C4 to C5)
+  const NOTES = [
+    { name:'Do',  freq: 261.63, color:'#ff9e9e' },
+    { name:'Re',  freq: 293.66, color:'#ffbf86' },
+    { name:'Mi',  freq: 329.63, color:'#ffe08a' },
+    { name:'Fa',  freq: 349.23, color:'#b9f28c' },
+    { name:'Sol', freq: 392.00, color:'#8cf2d9' },
+    { name:'La',  freq: 440.00, color:'#8cc8f2' },
+    { name:'Ti',  freq: 493.88, color:'#b58cf2' },
+    { name:'Do2', freq: 523.25, color:'#f28cd9' },
+  ];
+
+  legend.innerHTML = NOTES.map(n => `<span class="chip">${n.name}</span>`).join('');
+
+  let audioCtx = null;
+  const voices = []; // one persistent oscillator+gain per zone
+
+  function initAudio(){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    NOTES.forEach(n => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = n.freq;
+      gain.gain.value = 0.0001;
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      voices.push({ osc, gain, active:false });
+    });
+  }
+
+  function setVoice(i, on){
+    const v = voices[i];
+    const now = audioCtx.currentTime;
+    v.gain.gain.cancelScheduledValues(now);
+    const current = v.gain.gain.value;
+    v.gain.gain.setValueAtTime(current, now);
+    if (on && !v.active){
+      v.gain.gain.linearRampToValueAtTime(0.16, now + 0.05);
+    } else if (!on && v.active){
+      v.gain.gain.linearRampToValueAtTime(0.0001, now + 0.18);
+    }
+    v.active = on;
+  }
+
+  // Offscreen analysis canvas (unflipped, raw pixels)
+  const analysis = document.createElement('canvas');
+  const actx = analysis.getContext('2d', { willReadFrequently: true });
+
+  let running = false;
+  let zoneW = 0, zoneH = 0;
+  const ZONES = NOTES.length;
+  const PRESENCE_THRESHOLD = 0.10; // fraction of skin pixels needed to trigger
+  const SAMPLE_STEP = 4; // pixel skip for perf
+
+  function isSkin(r,g,b){
+    // common heuristic for skin-tone detection under normal lighting
+    return (r > 60 && g > 30 && b > 15 &&
+            r > g && r > b &&
+            (Math.max(r,g,b) - Math.min(r,g,b)) > 12 &&
+            Math.abs(r-g) > 10);
+  }
+
+  function resizeCanvases(){
+    const rect = stage.getBoundingClientRect();
+    overlay.width = rect.width;
+    overlay.height = rect.height;
+    analysis.width = video.videoWidth || rect.width;
+    analysis.height = video.videoHeight || rect.height;
+    zoneW = analysis.width / ZONES;
+    zoneH = analysis.height;
+  }
+
+  function drawOverlay(activeFlags, ratios){
+    const w = overlay.width, h = overlay.height;
+    octx.clearRect(0,0,w,h);
+    const zw = w / ZONES;
+    for (let i=0;i<ZONES;i++){
+      const n = NOTES[i];
+      const x = i*zw;
+      const active = activeFlags[i];
+      octx.fillStyle = active ? (n.color + 'aa') : 'rgba(255,255,255,0.03)';
+      octx.fillRect(x, 0, zw, h);
+      octx.strokeStyle = 'rgba(255,255,255,0.12)';
+      octx.lineWidth = 1;
+      octx.strokeRect(x, 0, zw, h);
+
+      octx.save();
+      octx.translate(x + zw/2, h - 18);
+      octx.scale(-1,1); // un-mirror text so it reads correctly
+      octx.fillStyle = active ? '#0a0a0f' : 'rgba(244,242,236,0.55)';
+      octx.font = active ? '700 15px sans-serif' : '600 13px sans-serif';
+      octx.textAlign = 'center';
+      octx.fillText(n.name, 0, 0);
+      octx.restore();
+    }
+  }
+
+  function loop(){
+    if (!running) return;
+    if (video.videoWidth){
+      if (analysis.width !== video.videoWidth) resizeCanvases();
+      actx.drawImage(video, 0, 0, analysis.width, analysis.height);
+      let imgData;
+      try {
+        imgData = actx.getImageData(0,0,analysis.width, analysis.height).data;
+      } catch(e){
+        requestAnimationFrame(loop);
+        return;
+      }
+      const activeFlags = [];
+      for (let z=0; z<ZONES; z++){
+        const xStart = Math.floor(z*zoneW);
+        const xEnd = Math.floor((z+1)*zoneW);
+        let skinCount = 0, total = 0;
+        for (let y=0; y<analysis.height; y+=SAMPLE_STEP){
+          for (let x=xStart; x<xEnd; x+=SAMPLE_STEP){
+            const idx = (y*analysis.width + x)*4;
+            const r = imgData[idx], g = imgData[idx+1], b = imgData[idx+2];
+            total++;
+            if (isSkin(r,g,b)) skinCount++;
+          }
+        }
+        const ratio = total ? skinCount/total : 0;
+        const on = ratio > PRESENCE_THRESHOLD;
+        activeFlags.push(on);
+        setVoice(z, on);
+      }
+      drawOverlay(activeFlags);
+    }
+    requestAnimationFrame(loop);
+  }
+
+  async function start(){
+    try{
+      statusText.textContent = 'กำลังขอสิทธิ์กล้อง...';
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'user' }, audio:false });
+      video.srcObject = stream;
+      await video.play();
+      initAudio();
+      resizeCanvases();
+      window.addEventListener('resize', resizeCanvases);
+      gate.style.display = 'none';
+      statusDot.classList.add('live');
+      statusText.textContent = 'กำลังทำงาน — ยกมือเข้ามาในเฟรมได้เลย';
+      running = true;
+      loop();
+    }catch(err){
+      statusText.textContent = 'เปิดกล้องไม่สำเร็จ: ' + err.message;
+    }
+  }
+
+  startBtn.addEventListener('click', start);
+})();
+</script>
+</body>
+</html>
     height: 36px;
     position: relative;
   }
